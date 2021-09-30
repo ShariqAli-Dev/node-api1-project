@@ -1,6 +1,6 @@
 // Imports
 const express = require('express');
-const users = require('./users/model');
+const Users = require('./users/model');
 
 // Instance
 const server = express();
@@ -9,9 +9,26 @@ const server = express();
 server.use(express.json());
 
 // GETS
+server.get('/api/users/:id', (req, res) => {
+  const userId = req.body;
+
+  Users.findById(userId)
+    .then((user) => {
+      if (!user)
+        res
+          .status(404)
+          .json({ message: 'The user with the specified ID does not exist' });
+      res.status(201).json(user);
+    })
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ message: 'The user information could not be retrieved' })
+    );
+});
+
 server.get('/api/users', (req, res) => {
-  users
-    .find()
+  Users.find()
     .then((users) => res.status(500).json(users))
     .catch((err) =>
       res
@@ -29,8 +46,7 @@ server.post('/api/users', (req, res) => {
       .status(400)
       .json({ message: 'Please provide name and bio for the user' });
 
-  users
-    .insert(newUser)
+  Users.insert(newUser)
     .then((insertedUser) => res.status(201).json(insertedUser))
     .catch((err) =>
       res.status(500).json({
