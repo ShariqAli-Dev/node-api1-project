@@ -8,7 +8,7 @@ const server = express();
 // Middleware
 server.use(express.json());
 
-// GETS
+// GET
 server.get('/api/users/:id', (req, res) => {
   const userId = req.body;
 
@@ -55,9 +55,27 @@ server.post('/api/users', (req, res) => {
     );
 });
 
-// POST
+// PUT
+// server.put('/api/users/:id', (req, res) => {
+//   const userId
+// })
 
 //DELETE
+server.delete('/api/users/:id', (req, res) => {
+  const userId = req.body;
+
+  Users.remove(userId)
+    .then((deletedUser) => {
+      if (!deletedUser)
+        res
+          .status(404)
+          .json({ message: 'The user with the specified ID does not exist' });
+      res.status(201).json(deletedUser);
+    })
+    .catch((err) =>
+      res.status(500).json({ message: 'The user could not be remove' })
+    );
+});
 
 server.use('*', (req, res) => {
   res.status(200).json({ message: 'Nothing is here homie' });
